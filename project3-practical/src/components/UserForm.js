@@ -1,37 +1,24 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from './UI/Button';
 import Card from './UI/Card';
 import Modal from './UI/Modal';
 import styles from './UserForm.module.css';
 
+
 const UserForm = ({ onAddUser }) => {
-  const [username, setUsername] = useState('');
-  const [age, setAge] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
   const [error, setError] = useState('');
-
-  const onUsernameChange = (e) => {
-    const newUsername = e.target.value;
-    setUsername(newUsername);
-  }
-
-  const onAgeChange = (e) => {
-    const newAge = e.target.value;
-    setAge(+newAge);
-  }
 
   const validateInput = (username, age) => {
     if (username.length === 0 && age.length === 0) {
       setError('Please, enter a valid name and age (non-empty values).');
-      setShowModal(true);
       return;
     } else if (username.length === 0) {
       setError('Please, enter a valid name.');
-      setShowModal(true);
       return;
     } else if (age.length === 0 || parseInt(age) < 0) {
       setError(`Please, enter a valid age, not ${parseInt(age) < 0 ? 'negative ' + age : 'an empty value'}`);
-      setShowModal(true);
       return;
     }
     return true;
@@ -39,25 +26,34 @@ const UserForm = ({ onAddUser }) => {
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    if (validateInput(username, age)) {
+    const enteredName = nameInputRef.current.value;
+    const enteredAge = +ageInputRef.current.value;
+
+    if (validateInput(enteredName, enteredAge)) {
       const newUser = {
         id: Math.random(),
-        username: username,
-        age: age
+        username: enteredName,
+        age: enteredAge
       };
 
       onAddUser(newUser);
+      nameInputRef.current.value = ''; //resetting the fields in a hacky way but it works
+      ageInputRef.current.value = ''
     }
   }
 
   return (
     <Card className={styles.input}>
-      {showModal && <Modal error={error} onModalClose={() => { setShowModal(false) }} />}
+      {error && <Modal error={error} onModalClose={() => { setError(null) }} />}
       <form onSubmit={onSubmitHandler}>
         <label htmlFor='username'>Username</label>
-        <input type="text" name="username" id="username" value={username} onChange={onUsernameChange} />
+        <input type="text" name="username" id="username"
+          ref={nameInputRef} />
         <label htmlFor='age'>Age (Years)</label>
-        <input type="text" name="age" id="age" onChange={onAgeChange} />
+        <input type="text"
+          name="age"
+          id="age"
+          ref={ageInputRef} />
         <Button type="submit">Add User</Button>
       </form>
     </Card>
