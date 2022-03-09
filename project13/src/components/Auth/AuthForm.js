@@ -3,6 +3,8 @@ import AuthContext from '../../store/auth-context';
 import classes from './AuthForm.module.css';
 import { useHistory } from 'react-router-dom';
 
+const API_KEY = "";
+
 const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
@@ -23,9 +25,9 @@ const AuthForm = () => {
     let url;
 
     if (isLogin) {
-      url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCHHKdp7dalMISWdCDWMe0gZ4pJLawe860";
+      url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + API_KEY;
     } else {
-      url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCHHKdp7dalMISWdCDWMe0gZ4pJLawe860";
+      url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + API_KEY;
     }
 
     fetch(url, {
